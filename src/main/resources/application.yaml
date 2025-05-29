@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: training-session-management
+
+server:
+  port: 8766
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8765/eureka/
