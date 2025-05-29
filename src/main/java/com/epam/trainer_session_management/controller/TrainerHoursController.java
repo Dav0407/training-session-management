@@ -1,6 +1,7 @@
 package com.epam.trainer_session_management.controller;
 
 import com.epam.trainer_session_management.dto.TrainerWorkloadRequest;
+import com.epam.trainer_session_management.dto.TrainerWorkloadResponse;
 import com.epam.trainer_session_management.model.TrainerWorkingHours;
 import com.epam.trainer_session_management.service.TrainerWorkingHoursService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class TrainerHoursController {
     private final TrainerWorkingHoursService trainerWorkingHoursService;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TrainerWorkingHours.Month> manageTrainerHours(@RequestBody TrainerWorkloadRequest request) {
+    public ResponseEntity<TrainerWorkloadResponse> manageTrainerHours(@RequestBody TrainerWorkloadRequest request) {
         return ResponseEntity.ok(trainerWorkingHoursService.calculateAndSave(request));
     }
 }
