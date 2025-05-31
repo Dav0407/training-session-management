@@ -26,26 +26,35 @@ repositories {
 
 ext {
     set('springCloudVersion', "2025.0.0-RC1")
+    jjwtVersion = '0.12.6'
 }
 
 dependencies {
 
     //Actuator
-    implementation group: 'org.springframework.boot', name:'spring-boot-starter-actuator'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
 
     //Spring Web
-    implementation group: 'org.springframework.boot', name:'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
 
     //Eureka Client
-    implementation group: 'org.springframework.cloud', name:'spring-cloud-starter-netflix-eureka-client'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client'
+
+    //Spring-Security
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+
+    //JWT
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: jjwtVersion
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: jjwtVersion
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: jjwtVersion
 
     //Lombok
-    compileOnly group: 'org.projectlombok', name:'lombok'
-    annotationProcessor group: 'org.projectlombok', name:'lombok'
+    compileOnly group: 'org.projectlombok', name: 'lombok'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok'
 
     //Test
-    testImplementation group: 'org.springframework.boot', name:'spring-boot-starter-test'
-    testRuntimeOnly group: 'org.junit.platform', name:'junit-platform-launcher'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-launcher'
 
 }
 
