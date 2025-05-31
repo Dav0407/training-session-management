@@ -39,9 +39,6 @@ dependencies {
     //Eureka Client
     implementation group: 'org.springframework.cloud', name:'spring-cloud-starter-netflix-eureka-client'
 
-    //Open Feign
-    implementation group: 'org.springframework.cloud', name:'spring-cloud-starter-openfeign'
-
     //Lombok
     compileOnly group: 'org.projectlombok', name:'lombok'
     annotationProcessor group: 'org.projectlombok', name:'lombok'

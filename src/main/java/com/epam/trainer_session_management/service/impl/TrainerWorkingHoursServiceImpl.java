@@ -2,6 +2,7 @@ package com.epam.trainer_session_management.service.impl;
 
 import com.epam.trainer_session_management.dto.TrainerWorkloadRequest;
 import com.epam.trainer_session_management.dto.TrainerWorkloadResponse;
+import com.epam.trainer_session_management.enums.ActionType;
 import com.epam.trainer_session_management.model.TrainerWorkingHours;
 import com.epam.trainer_session_management.service.TrainerWorkingHoursService;
 import org.springframework.stereotype.Service;
@@ -23,25 +24,54 @@ public class TrainerWorkingHoursServiceImpl implements TrainerWorkingHoursServic
     public TrainerWorkloadResponse calculateAndSave(TrainerWorkloadRequest request) {
         LocalDate localDate = toLocalDate(request.getTrainingDate());
         String year = String.valueOf(localDate.getYear());
-        String month = String.valueOf(localDate.getMonthValue());
+        String month = String.valueOf(localDate.getMonth());
+        String username = request.getTrainerUsername();
 
-        Float durationHours = request.getTrainingDuration() / 60.0F;
+        float rawDurationHours = request.getTrainingDuration() / 60.0F;
 
-        TRAINER_WORKLOAD_MAP.compute(request.getTrainerUsername(), (username, existingData) -> {
+        //Treat inactive trainers' hours as DELETE even if ActionType is ADD
+        boolean shouldSubtract = request.getActionType() == ActionType.DELETE || !request.getIsActive();
+        float durationHours = shouldSubtract ? -rawDurationHours : rawDurationHours;
+
+        TRAINER_WORKLOAD_MAP.compute(username, (key, existingData) -> {
             if (existingData == null) {
                 return createNewTrainerRecord(request, year, month, durationHours);
             }
             return updateTrainerRecord(existingData, year, month, durationHours);
         });
 
-        TrainerWorkingHours updated = TRAINER_WORKLOAD_MAP.get(request.getTrainerUsername());
+        TrainerWorkingHours updated = TRAINER_WORKLOAD_MAP.get(username);
         TrainerWorkingHours.Month updatedMonth = findMonth(updated, year, month);
 
+        System.out.println("Saved or updated: " + updated);
         return TrainerWorkloadResponse.builder()
                 .trainerUsername(updated.getTrainerUsername())
                 .year(year)
                 .month(month)
                 .workingHours(updatedMonth.getWorkingHours())
+                .build();
+    }
+
+    @Override
+    public TrainerWorkloadResponse getTrainerWorkingHours(String trainerUsername, String year, String month) {
+        TrainerWorkingHours trainerWorkingHours = TRAINER_WORKLOAD_MAP.get(trainerUsername);
+        if (trainerWorkingHours == null) {
+            throw new IllegalArgumentException("Trainer not found: " + trainerUsername);
+        }
+
+        TrainerWorkingHours.Month monthEntry = trainerWorkingHours.getYears().stream()
+                .filter(y -> y.getYear().equals(year))
+                .flatMap(y -> y.getMonths().stream())
+                .filter(m -> m.getMonth().equals(month.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No data found for year " + year + " and month " + month));
+
+        System.out.println("Read: " + trainerWorkingHours);
+        return TrainerWorkloadResponse.builder()
+                .trainerUsername(trainerWorkingHours.getTrainerUsername())
+                .year(year)
+                .month(month)
+                .workingHours(monthEntry.getWorkingHours())
                 .build();
     }
 
@@ -97,7 +127,9 @@ public class TrainerWorkingHoursServiceImpl implements TrainerWorkingHoursServic
                     return newMonth;
                 });
 
-        monthEntry.setWorkingHours(monthEntry.getWorkingHours() + durationHours);
+        float newTotal = monthEntry.getWorkingHours() + durationHours;
+        monthEntry.setWorkingHours(Math.max(0.0f, newTotal)); //prevent negative hours
+
         return existing;
     }
 
