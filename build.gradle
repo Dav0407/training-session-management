@@ -48,6 +48,13 @@ dependencies {
     implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: jjwtVersion
     implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: jjwtVersion
 
+    //AOP
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+
+    //Logging
+    implementation group: 'ch.qos.logback', name: 'logback-classic'
+    implementation group: 'org.slf4j', name: 'slf4j-api'
+
     //Lombok
     compileOnly group: 'org.projectlombok', name: 'lombok'
     annotationProcessor group: 'org.projectlombok', name: 'lombok'
