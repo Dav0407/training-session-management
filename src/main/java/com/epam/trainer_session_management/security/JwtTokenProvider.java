@@ -24,6 +24,11 @@ public class JwtTokenProvider {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractRole(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("role", String.class);
+    }
+
     public boolean isValidTrainerToken(String token) {
         try {
             Claims claims = extractAllClaims(token);
