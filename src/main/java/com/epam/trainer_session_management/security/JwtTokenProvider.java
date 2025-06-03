@@ -52,12 +52,12 @@ public class JwtTokenProvider {
         return claimsResolver.apply(claims);
     }
 
-    private SecretKey getSignInKey() {
+    public SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
                 .verifyWith(getSignInKey())
